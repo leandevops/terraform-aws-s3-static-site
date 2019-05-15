@@ -18,9 +18,9 @@ all: init validate plan apply run-tests destroy ## run nit validate plan apply r
 init: ## initial terraform setup
 	@echo "$(GREEN)✓ Initializing terraform $(NC)\n"
 	@terraform init -input=false -lock=true \
-			   -upgrade -force-copy -backend=true -get=true \
-			   -get-plugins=true -verify-plugins=true \
-			   tests/fixtures/tf_module
+		-upgrade -force-copy -backend=true -get=true \
+		-get-plugins=true -verify-plugins=true \
+		tests/fixtures/tf_module
 	@$(MAKE) -s post-action
 
 
