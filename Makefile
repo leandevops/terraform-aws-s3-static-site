@@ -65,6 +65,8 @@ run-tests: ## run tests with RSPEC
 
 destroy: ## destroy all resources
 	@echo "$(RED)✓ Destroying terraform resources $(NC)\n"
+	@aws s3 rm s3://$(S3_BUCKET_NAME)/index.html
+	@aws s3 rm s3://$(S3_BUCKET_NAME)/error.html
 	@terraform destroy -force -input=false -parallelism=4 -refresh=true \
 			   -var-file=tests/fixtures/tf_module/testing.tfvars \
 			   tests/fixtures/tf_module
@@ -72,7 +74,7 @@ destroy: ## destroy all resources
 	@$(MAKE) -s post-action
 
 
-deploy: ## Deploy static site to S3
+deploy: ## deploy static site to S3
 	aws s3 sync --delete --acl public-read --exact-timestamps \
 		$(PUBLISH_DIR)/ s3://$(S3_BUCKET_NAME)/
 
