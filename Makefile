@@ -1,4 +1,7 @@
-.PHONY: help all init update validate plan apply run-tests destroy clean tflint deps post-action
+.PHONY: help all init update validate plan \
+		apply run-tests destroy clean tflint deps post-action \
+		rm-docs deploy
+
 .DEFAULT_GOAL := help
 
 BLUE	= \033[0;34m
@@ -63,10 +66,8 @@ run-tests: ## run tests with RSPEC
 	@$(MAKE) -s post-action
 
 
-destroy: ## destroy all resources
+destroy: rm-docs ## destroy all resources
 	@echo "$(RED)✓ Destroying terraform resources $(NC)\n"
-	@aws s3 rm s3://$(S3_BUCKET_NAME)/index.html
-	@aws s3 rm s3://$(S3_BUCKET_NAME)/error.html
 	@terraform destroy -force -input=false -parallelism=4 -refresh=true \
 			   -var-file=tests/fixtures/tf_module/testing.tfvars \
 			   tests/fixtures/tf_module
@@ -74,7 +75,12 @@ destroy: ## destroy all resources
 	@$(MAKE) -s post-action
 
 
-deploy: ## deploy static site to S3
+rm-docs: ## delete files in S3 (index.html and error.html)
+	@aws s3 rm s3://$(S3_BUCKET_NAME)/index.html
+	@aws s3 rm s3://$(S3_BUCKET_NAME)/error.html
+
+
+deploy: ## deploy static site to S3 (2 documents in public folder)
 	aws s3 sync --delete --acl public-read --exact-timestamps \
 		$(PUBLISH_DIR)/ s3://$(S3_BUCKET_NAME)/
 
