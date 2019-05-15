@@ -6,6 +6,8 @@ GREEN	= \033[0;32m
 RED   = \033[0;31m
 NC    = \033[0m
 
+export PUBLISH_DIR ?= public
+
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -69,6 +71,10 @@ destroy: ## destroy all resources
 	@rm terraform.tfstate*
 	@$(MAKE) -s post-action
 
+
+deploy: ## Deploy static site to S3
+	aws s3 sync --delete --acl public-read --exact-timestamps \
+		$(PUBLISH_DIR)/ s3://$(S3_BUCKET_NAME)/
 
 clean: ## module cleanup
 	@echo "$(RED)✓ Cleaning directory $(NC)\n"
