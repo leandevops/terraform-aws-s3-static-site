@@ -6,56 +6,71 @@
 
 | Name   |    Description |
 |--------|--------------|
-| `name` | name to be used on all the resources created by the module |
-| `vpc_cidr` | the CIDR block for the VPC |
-| `public_subnets` | the list of public subnet CIDRs |
-| `private_subnets` | the list of private subnet CIDRs |
-| `enable_dns_hostnames` | should be true if you want to use private DNS within the VPC |
-| `enable_dns_support` | should be set true to use private DNS within the VPC |
-| `enable_nat_gateway` | should be true if you want to provision NAT Gateways (default - false) |
-| `multi_nat_gateway` | should be true if you want to provision a multiple NAT Gateways across all of your private networks (default - false)|
-| `map_public_ip_on_launch` | should be false if you do not want to auto-assign public IP on launch (default - true) |
-| `enable_dhcp_options` | should be set to true if you want to create a dhcp options for vpc |
-| `dhcp_options_domain_name` | specify a domain name |
-| `enable_s3_endpoint` | create S3 enpoint and corresponding routes |
+| `region` | Region to create a bucket |
+| `domain_name` | Domain name for static site |
+| `index_document` |  (Required, unless using redirect_all_requests_to) Amazon S3 returns this index document when requests are made to the root domain or any of the subfolders |
+| `error_document` | (Optional) An absolute path to the document to return in case of a 4XX errors |
+| `versioning_enabled` | A state of versioning |
+| `redirect_all_requests_to` | A hostname to redirect all website requests for this bucket to. If this is set `index_document` will be ignored |
+| `routing_rules` | A json array containing routing rules describing redirect behavior and when redirects are applied |
+| `force_destroy` | Delete all objects from the bucket so that the bucket can be destroyed without error (e.g. `true` or `false`)|
+| `tags` | A map of tags for a bucket |
 
 ## Usage
 
 ```hcl
-module "vpc" {
-  source = "github.com/leandevops/terraform-aws-vpc//module?ref=v1.1.0"
-
-  name        = "kubernetes-vpc"  
-  region      = "${var.region}"
-  vpc_cidr    = "10.0.0.0/16"
-
-  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnets = ["10.0.10.0/24", "10.0.20.0/24"]
-
-  enable_dhcp_options      = true
-  dhcp_options_domain_name = "${var.domain_name}"
-
-  map_public_ip_on_launch = true
-  enable_nat_gateway      = true
-  multi_nat_gateway       = true
+provider "aws" {
+  region = "${var.region}"
 }
+
+# create a website bucket
+module "website" {
+  source         = "github.com/leandevops/terraform-aws-s3-static-site//module?ref=v0.1.0"
+  region         = "${var.region}"
+
+  domain_name    = "${var.domain_name}"
+
+  index_document = "${var.index_document}"
+  error_document = "${var.error_document}"
+  tags           = "${var.tags}"
+}
+
+# create a redirect bucket that points to website
+module "website_redirect" {
+  source = "github.com/leandevops/terraform-aws-s3-static-site//module?ref=v0.1.0"
+  region                   = "${var.region}"
+
+  domain_name              = "www.${var.domain_name}"
+
+  redirect_all_requests_to = "https://${var.domain_name}"
+  tags = "${var.tags}"
+}
+
+output "website_url" {
+  value = "${module.website.s3_bucket_website_domain}"
+}
+
+output "website_redirect_url" {
+  value = "${module.website_redirect.s3_bucket_website_domain}"
+}
+
 ```
-To see more examples of using this module, refer to [examples](https://github.com/leandevops/terraform-aws-vpc/tree/master/examples) directory.
+To see more examples of using this module, refer to [examples](https://github.com/leandevops/terraform-aws-s3-static-site/tree/master/examples) directory.
 
 ## Outputs
 | Name   |  Description |
 |--------|--------------|
-| `vpc_id` | the VPC id |
-| `public_subnets` | list of public subnet ids |
-| `private_subnets` | list of private subnet ids |
-| `default_sg` | VPC default security group id |
-| `allow_ssh-sg` | allow_ssh security group id |
+| `s3_bucket_name` | DNS record of website bucket |
+| `s3_bucket_domain_name` | Name of of website bucket |
+| `s3_bucket_arn` | The arn of of website bucket |
+| `s3_bucket_website_endpoint` | The website endpoint URL |
+| `s3_bucket_website_domain` | The domain of the website endpoint |
 
 ## How do I contribute to this Module?
 Contributions are very welcome! Check out the 
 [Contribution Guidelines]() for instructions.
 
 ## License
-This code is released under the Apache 2.0 License. Please see [LICENSE](https://github.com/leandevops/terraform-aws-vpc/tree/master/LICENSE) for more details.
+This code is released under the Apache 2.0 License. Please see [LICENSE](https://github.com/leandevops/terraform-aws-s3-static-site/LICENSE) for more details.
 
 Copyright © 2019 [LeanDevops](https://leandevops.io).
