@@ -4,12 +4,12 @@ provider "aws" {
 
 # create a root bucket
 module "website_root" {
-  source = "../../../module"
+  source         = "../../../module"
   region         = "${var.region}"
   domain_name    = "${var.domain_name}"
   index_document = "${var.index_document}"
   error_document = "${var.error_document}"
-  tags = "${var.tags}"
+  tags           = "${var.tags}"
 }
 
 # create a redirect bucket that points to root

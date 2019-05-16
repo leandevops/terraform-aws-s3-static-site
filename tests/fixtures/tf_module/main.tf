@@ -13,7 +13,7 @@ module "module_test" {
 
   # set force_destroy to true, consider this
   # parameter in environments that are not 'test'
-  force_destroy  = true
+  force_destroy = true
 
   tags = "${var.tags}"
 }
