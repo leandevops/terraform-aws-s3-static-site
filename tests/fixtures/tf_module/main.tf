@@ -11,9 +11,13 @@ module "module_test" {
   index_document = "${var.index_document}"
   error_document = "${var.error_document}"
 
+  # set force_destroy to true, consider this
+  # parameter in environments that are not 'test'
+  force_destroy  = true
+
   tags = "${var.tags}"
 }
 
-output "s3_bucket_website_domain_root" {
-  value = "${module.module_test.s3_bucket_website_domain}"
+output "s3_bucket_website_domain" {
+  value = "${module.module_test.s3_bucket_website_endpoint}"
 }
