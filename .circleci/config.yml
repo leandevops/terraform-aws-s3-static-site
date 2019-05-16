@@ -45,6 +45,7 @@ jobs:
     environment:
       BUNDLE_PATH: vendor/bundle
       AWS_REGION: us-east-1
+      S3_BUCKET_NAME: devopsrush.com
 
     steps:
       - checkout
