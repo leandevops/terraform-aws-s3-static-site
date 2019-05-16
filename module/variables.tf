@@ -26,7 +26,7 @@ variable "versioning_enabled" {
   default     = false
 }
 
-variable "redirect_requests_to" {
+variable "redirect_all_requests_to" {
   description = "A hostname to redirect all website requests for this bucket to. If this is set `index_document` will be ignored."
   default     = ""
 }

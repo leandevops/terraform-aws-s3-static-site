@@ -5,7 +5,7 @@
 locals {
   website_config = {
     redirect_all = [{
-      redirect_all_requests_to = "${var.redirect_requests_to}"
+      redirect_all_requests_to = "${var.redirect_all_requests_to}"
     }]
 
     default = [{
@@ -25,10 +25,7 @@ resource "aws_s3_bucket" "website" {
   acl           = "public-read"
   force_destroy = "${var.force_destroy}"
 
-  website {
-    index_document = "${var.index_document}"
-    error_document = "${var.error_document}"
-  }
+  website = "${local.website_config[var.redirect_all_requests_to == "" ? "default" : "redirect_all"]}"
 
   tags = "${merge(var.tags, map("Name", format("%s", var.domain_name)))}"
 
