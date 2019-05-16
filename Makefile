@@ -66,7 +66,7 @@ run-tests: ## run tests with RSPEC
 	@$(MAKE) -s post-action
 
 
-destroy: rm-docs ## destroy all resources
+destroy: ## destroy all resources
 	@echo "$(RED)✓ Destroying terraform resources $(NC)\n"
 	@terraform destroy -force -input=false -parallelism=4 -refresh=true \
 			   -var-file=tests/fixtures/tf_module/testing.tfvars \
