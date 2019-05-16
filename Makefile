@@ -2,8 +2,6 @@
 		apply run-tests destroy clean tflint deps post-action \
 		rm-docs deploy
 
-.DEFAULT_GOAL := help
-
 BLUE	= \033[0;34m
 GREEN	= \033[0;32m
 RED   = \033[0;31m
