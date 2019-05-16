@@ -2,8 +2,6 @@
 		apply run-tests destroy clean tflint deps post-action \
 		rm-docs deploy
 
-.DEFAULT_GOAL := help
-
 BLUE	= \033[0;34m
 GREEN	= \033[0;32m
 RED   = \033[0;31m
@@ -14,7 +12,7 @@ export PUBLISH_DIR ?= public
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-all: init validate plan apply run-tests destroy ## run nit validate plan apply run-tests destroy
+all: init validate plan apply deploy run-tests destroy ## run nit validate plan apply run-tests destroy
 	@echo "$(GREEN)✓ 'make all' has completed $(NC)\n"
 
 
