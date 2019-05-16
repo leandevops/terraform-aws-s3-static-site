@@ -1,0 +1,96 @@
+env: &docker    
+  docker:
+    - image: leandevopsio/terratest:0.1
+
+version: 2
+jobs:
+  terraform-init:
+    <<: *docker
+    steps:
+      - checkout
+      - run:
+          name: Terraform init
+          command: make init
+
+  terraform-validate:
+    <<: *docker
+    steps:
+      - checkout
+      - run:
+          name: Validate Terraform configurations
+          command: make init || make validate
+
+  terraform-fmt:
+    <<: *docker
+    steps:
+      - checkout
+      - run:
+          name: Check if Terraform configurations are properly formatted
+          command: |
+            if [[ -n "$(terraform fmt -write=false)" ]]; \
+            then echo "Some terraform files need be formatted, run 'terraform fmt' to fix"; \
+            exit 1; fi
+
+  tflint:
+    <<: *docker
+    steps:
+      - checkout
+      - run:
+          name: Check Terraform configurations with tflint
+          command: |
+            cd module
+            tflint
+  run-tests:
+    <<: *docker
+    environment:
+      BUNDLE_PATH: vendor/bundle
+      AWS_REGION: us-east-1
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - terraform-{{ checksum "Gemfile.lock" }}
+
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install
+      
+      - save_cache:
+          key: terraform-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - run:
+          name: Run all with Rspec tests
+          command: make
+
+workflows:
+  version: 2
+  tf-workflow:
+    jobs:
+      - terraform-init
+      - terraform-validate:
+          requires:
+            - terraform-init
+      - terraform-fmt:
+          requires:
+            - terraform-init
+      - tflint:
+          requires:
+            - terraform-init
+      - request-run:
+          type: approval
+          requires:
+            - terraform-validate
+            - terraform-fmt
+            - tflint
+          filters:
+            branches:
+              ignore: master
+      - run-tests:
+          requires:
+            - request-run
+          filters:
+            branches:
+              ignore: master
