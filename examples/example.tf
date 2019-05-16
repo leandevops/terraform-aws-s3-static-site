@@ -3,23 +3,17 @@ provider "aws" {
 }
 
 # create a root bucket
-module "module_test_root" {
+module "website_root" {
   source = "../../../module"
-
   region         = "${var.region}"
   domain_name    = "${var.domain_name}"
   index_document = "${var.index_document}"
   error_document = "${var.error_document}"
-
   tags = "${var.tags}"
 }
 
-output "s3_bucket_website_domain_root" {
-  value = "${module.module_test_root.s3_bucket_website_domain}"
-}
-
 # create a redirect bucket that points to root
-module "module_test_redirect" {
+module "website_redirect" {
   source = "../../../module"
 
   region                   = "${var.region}"
@@ -29,6 +23,19 @@ module "module_test_redirect" {
   tags = "${var.tags}"
 }
 
+output "s3_bucket_website_domain_root" {
+  value = "${module.website_root.s3_bucket_website_domain}"
+}
+
 output "s3_bucket_website_domain_redirect" {
-  value = "${module.module_test_redirect.s3_bucket_website_domain}"
+  value = "${module.website_redirect.s3_bucket_website_domain}"
+}
+
+# ---------------------------------------------
+# find the ACM certificate domain
+# ---------------------------------------------
+
+data "aws_acm_certificate" "cert" {
+  domain   = "domain.name"
+  statuses = ["ISSUED"]
 }
