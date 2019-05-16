@@ -2,40 +2,33 @@ provider "aws" {
   region = "${var.region}"
 }
 
-# create a root bucket
-module "website_root" {
-  source         = "../../../module"
+# create a website bucket
+module "website" {
+  source         = "github.com/leandevops/terraform-aws-s3-static-site//module?ref=v0.1.0"
   region         = "${var.region}"
+
   domain_name    = "${var.domain_name}"
+
   index_document = "${var.index_document}"
   error_document = "${var.error_document}"
   tags           = "${var.tags}"
 }
 
-# create a redirect bucket that points to root
+# create a redirect bucket that points to website
 module "website_redirect" {
-  source = "../../../module"
-
+  source = "github.com/leandevops/terraform-aws-s3-static-site//module?ref=v0.1.0"
   region                   = "${var.region}"
-  domain_name              = "www.${var.domain_name}"
-  redirect_all_requests_to = "https://${var.domain_name}"
 
+  domain_name              = "www.${var.domain_name}"
+
+  redirect_all_requests_to = "https://${var.domain_name}"
   tags = "${var.tags}"
 }
 
-output "s3_bucket_website_domain_root" {
-  value = "${module.website_root.s3_bucket_website_domain}"
+output "website_url" {
+  value = "${module.website.s3_bucket_website_domain}"
 }
 
-output "s3_bucket_website_domain_redirect" {
+output "website_redirect_url" {
   value = "${module.website_redirect.s3_bucket_website_domain}"
-}
-
-# ---------------------------------------------
-# find the ACM certificate domain
-# ---------------------------------------------
-
-data "aws_acm_certificate" "cert" {
-  domain   = "domain.name"
-  statuses = ["ISSUED"]
 }
