@@ -64,9 +64,7 @@ jobs:
 
       - run:
           name: Run all with Rspec tests
-          command: |
-            pip install awscli
-            make all
+          command: make all
 
 workflows:
   version: 2
