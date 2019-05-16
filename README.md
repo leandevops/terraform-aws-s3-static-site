@@ -71,6 +71,6 @@ Contributions are very welcome! Check out the
 [Contribution Guidelines]() for instructions.
 
 ## License
-This code is released under the Apache 2.0 License. Please see [LICENSE](https://github.com/leandevops/terraform-aws-s3-static-site/LICENSE) for more details.
+This code is released under the Apache 2.0 License. Please see [LICENSE](https://github.com/leandevops/terraform-aws-s3-static-site/blob/master/LICENSE) for more details.
 
 Copyright © 2019 [LeanDevops](https://leandevops.io).
