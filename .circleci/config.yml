@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Validate Terraform configurations
-          command: make init || make validate
+          command: make init && make validate
 
   terraform-fmt:
     <<: *docker
@@ -63,7 +63,7 @@ jobs:
 
       - run:
           name: Run all with Rspec tests
-          command: make
+          command: make all
 
 workflows:
   version: 2
