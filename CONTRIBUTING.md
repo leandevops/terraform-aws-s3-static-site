@@ -6,7 +6,7 @@ Please use the [issue tracker](https://github.com/leandevops/terraform-aws-s3-st
 
 ### Developing
 
-If you are interested in being a contributor and want to get involved in developing this project or with our other projects, we would love to hear from you! Shoot us an [email](leandevopsio@gmail.com).
+If you are interested in being a contributor and want to get involved in developing this project or with our other projects, we would love to hear from you! Shoot us an [email](mailto:leandevopsio@gmail.com).
 
 In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
