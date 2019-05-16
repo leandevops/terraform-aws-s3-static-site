@@ -1,7 +1,7 @@
 region = "us-east-1"
 domain_name = "devopsrush.com"
-index_doc = "index.html"
-error_doc = "error.html"
+index_document = "index.html"
+error_document = "error.html"
 
 tags = {
   environment = "development"

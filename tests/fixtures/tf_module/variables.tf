@@ -1,7 +1,8 @@
 variable "region" {}
-variable "index_doc" {}
-variable "error_doc" {}
+variable "index_document" {}
+variable "error_document" {}
 variable "domain_name" {}
+
 
 variable "tags" {
   default = {}
