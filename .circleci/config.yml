@@ -1,6 +1,6 @@
 env: &docker    
   docker:
-    - image: leandevopsio/terratest:0.1
+    - image: leandevopsio/terratest:0.2
 
 version: 2
 jobs:
@@ -64,7 +64,9 @@ jobs:
 
       - run:
           name: Run all with Rspec tests
-          command: make all
+          command: |
+            pip install awscli
+            make all
 
 workflows:
   version: 2
